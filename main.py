@@ -176,7 +176,7 @@ async def remindme(ctx, *, reminder):
                        "a public version that works on a time basis (e.g. {}remindme 1m test).".format(ctx.author.name,
                                                                                                        secrets["prefix"]))
         return
-    requests.post(osecrets["pi_webhook"], data=json.dumps({"content": reminder}),
+    requests.post(osecrets["reminders_webhook"], data=json.dumps({"content": reminder}),
                   headers={"Content-Type": "application/json"})
 
 @client.command(name="exit")
