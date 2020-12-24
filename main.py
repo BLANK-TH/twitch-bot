@@ -44,7 +44,7 @@ def similar(a, b):
 
 twitch_secrets = ["IRC_TOKEN", "CLIENT_ID", "NICK", "PREFIX", "INITIAL_CHANNELS"]
 reddit_secrets = ["REDDIT_ID", "REDDIT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD"]
-other_secrets = ["PI_WEBHOOK", "TOR_FLAIR_LINK", "TOR_FLAIR_COMMENT_ID"]
+other_secrets = ["PI_WEBHOOK", "REMINDERS_WEBHOOK", "TOR_FLAIR_LINK", "TOR_FLAIR_COMMENT_ID"]
 mod_list = ["altrissa", "curatorofyourdreams"]
 
 envi = True
@@ -168,6 +168,16 @@ async def goodhuman(ctx):
         counts["goodhuman"] += 1
         await ctx.send("@BLANK_DvTH has been called a good human {:,} times.".format(counts["goodhuman"]))
         save_data()
+
+@client.command()
+async def remindme(ctx, *, reminder):
+    if ctx.author.name.casefold() != "blank_dvth":
+        await ctx.send("@{} This command is for BLANK only. If there's more demand for this command I may come up with "
+                       "a public version that works on a time basis (e.g. {}remindme 1m test).".format(ctx.author.name,
+                                                                                                       secrets["prefix"]))
+        return
+    requests.post(osecrets["pi_webhook"], data=json.dumps({"content": reminder}),
+                  headers={"Content-Type": "application/json"})
 
 @client.command(name="exit")
 async def _exit(ctx):
