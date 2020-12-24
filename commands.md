@@ -20,6 +20,10 @@ Same as [good bot](#good-bot) except with good human instead.
 Time until Christmas (in UTC)
 
 ## Utility Commands
+### Help
+**Command**: `help` **OR** `commands`
+Get a link to the this page
+
 ### Personal Information Warning
 **Command:** `piwarning` **OR** `pi`
 Warn BLANK about the current post possible violating PI rules (more noticeable than a chat message).

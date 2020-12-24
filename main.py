@@ -223,4 +223,9 @@ async def christmas(ctx):
     formatted_time = "{days} days, {hours} hours, {minutes} minutes, and {seconds} seconds".format(**d)
     await ctx.send("{} until Christmas (in UTC)".format(formatted_time))
 
+@client.command(name="help", aliases=["commands"])
+async def _help(ctx):
+    await ctx.send("Here's a link to the commands for this bot: "
+                   "https://www.github.com/BLANK-TH/twitch-bot/blob/master/commands.md")
+
 client.run()
