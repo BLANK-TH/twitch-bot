@@ -4,6 +4,7 @@ import traceback
 import sys
 import praw
 import datetime
+from random import choice
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import *
 from os import environ, getenv, execv, mkdir
@@ -140,6 +141,11 @@ async def event_join(user):
         ws = client._ws
         await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad @{} is here, say byebye to all of "
                                                               "your posts!".format(user.name))
+
+@client.command()
+async def test(ctx):
+    choices = ["I'm working!", "What is there to test?", "What? You think I'm broken?"]
+    await ctx.send(choice(choices))
 
 @client.command(aliases=["pi"])
 async def piwarning(ctx):
