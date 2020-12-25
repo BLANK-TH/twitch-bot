@@ -23,9 +23,8 @@ Same as [good bot](#good-bot) except with good human instead.
 **Command**: `christmas`
 Time until Christmas (in UTC).
 ### Sabotage
-**Command**: `sabotage [add]`
-Posts a random message sabotaging BLANK. Mods can also use this command to add phrases to the sabotage list by adding it
-after the command.
+**Command**: `sabotage [add/remove] [value]`
+Posts a random message sabotaging BLANK. Mods can also use this command to add phrases to the sabotage list.
 
 ## Utility Commands
 ### Help
