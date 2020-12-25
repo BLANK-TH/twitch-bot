@@ -1,5 +1,5 @@
 # Commands
-**Prefix:** `bb-`
+**Prefix:** `b!`
 <example> Required
 [example] optional
 
