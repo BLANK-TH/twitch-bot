@@ -103,6 +103,7 @@ for secret in osecrets.values():
         exit()
 
 # Load stored data
+assert_data()
 with open("data/counts.json", "r") as f:
     counts = json.load(f)
 with open("data/modlist.json", "r") as f:
@@ -287,7 +288,7 @@ async def deletemod(ctx, mod):
         return
     mod_list.remove(mod)
     save_data()
-    await ctx.send("Removed mod {} to mod list".format(mod))
+    await ctx.send("Removed mod {} from mod list".format(mod))
 
 @client.command()
 async def christmas(ctx):
