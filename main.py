@@ -244,6 +244,16 @@ async def addmod(ctx, mod):
     await ctx.send("Added mod {} to mod list".format(mod))
 
 @client.command()
+async def deletemod(ctx, mod):
+    global mod_list
+    if not ctx.author.is_mod:
+        await ctx.send("@{} This command is for mods only".format(ctx.author.name))
+        return
+    mod_list.remove(mod)
+    save_data()
+    await ctx.send("Removed mod {} to mod list".format(mod))
+
+@client.command()
 async def christmas(ctx):
     date = datetime.datetime.utcnow()
     next_xmas = datetime.datetime(date.year, 12, 25)

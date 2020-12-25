@@ -41,3 +41,6 @@ Get the starting gamma of the stream or set it.
 ### Add Mod
 **Command**: `addmod <mod>`
 Add a ToR mod to the detection list.
+### Add Mod
+**Command**: `removemod <mod>`
+Remove a ToR mod from the detection list.
