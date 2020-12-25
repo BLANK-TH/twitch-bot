@@ -286,13 +286,31 @@ async def christmas(ctx):
     await ctx.send("{} until Christmas {} in UTC".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S")))
 
 @client.command()
-async def sabotage(ctx, *, add=None):
-    if add is not None:
+async def sabotage(ctx, action=None, *, value=None):
+    if action is not None:
+        action = action.lower()
+        if action not in ["add", "remove"]:
+            await ctx.send("Invalid action \"{}\"".format(action))
+            return
+        if value is None:
+            await ctx.send("Invalid value for action \"{}\"".format(action))
+            return
         if not ctx.author.is_mod:
             await ctx.send("@{} This command is for mods only".format(ctx.author.name))
             return
-        lists["sabotagemessages"].append(add)
+        if action == "add":
+            if value in lists["sabotagemessages"]:
+                await ctx.send("\"{}\" is already in sabotage list".format(value))
+                return
+            lists["sabotagemessages"].append(value)
+        elif action == "remove":
+            if value not in lists["sabotagemessages"]:
+                await ctx.send("\"{}\" is not in sabotage list".format(value))
+                return
+            lists["sabotagemessages"].remove(value)
         save_data()
+        await ctx.send("Successfully {}{} \"{}\" from sabotage list".format(action, "d" if action[:-1] == "e" else "ed",
+                                                                            value))
         return
     await ctx.send("@{} has {}.".format(ctx.author.name, choice(lists["sabotagemessages"])))
 
