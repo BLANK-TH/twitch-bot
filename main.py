@@ -236,8 +236,15 @@ async def christmas(ctx):
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
-    formatted_time = "{days} days, {hours} hours, {minutes} minutes, and {seconds} seconds".format(**d)
-    await ctx.send("{} until Christmas (in UTC)".format(formatted_time))
+    formatted_time = "{} day{}, {} hour{}, {} minute{}, and {} second{}".format(d["days"],
+                                                                                "s" if str(d["days"]) != "1" else "",
+                                                                                d["hours"],
+                                                                                "s" if str(d["hours"]) != "1" else "",
+                                                                                d["minutes"],
+                                                                                "s" if str(d["minutes"]) != "1" else "",
+                                                                                d["seconds"],
+                                                                                "s" if str(d["seconds"]) != "1" else "")
+    await ctx.send("{} until Christmas {} in UTC".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S")))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
