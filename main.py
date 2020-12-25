@@ -32,6 +32,9 @@ def assert_data():
     if not isfile("data/cache.json"):
         with open("data/cache.json", "w") as f:
             json.dump({"restart": False}, f, indent=2)
+    if not isfile("data/sabotagemessages.json"):
+        with open("data/sabotagemessages.json", "w") as f:
+            json.dump([], f, indent=2)
 
 def save_data():
     assert_data()
@@ -41,6 +44,8 @@ def save_data():
         json.dump(mod_list, f, indent=2)
     with open("data/cache.json", "w") as f:
         json.dump(cache, f, indent=2)
+    with open("data/sabotagemessages.json", "w") as f:
+        json.dump(sabotage_messages, f, indent=2)
 
 def get_gamma() -> int:
     last_comment = reddit.submission(url=osecrets["tor_flair_link"]).comments[0]
@@ -104,6 +109,8 @@ with open("data/modlist.json", "r") as f:
     mod_list = json.load(f)
 with open("data/cache.json", "r") as f:
     cache = json.load(f)
+with open("data/sabotagemessages.json", "r") as f:
+    sabotage_messages = json.load(f)
 
 # Create bot instance
 client = commands.Bot(**secrets)
@@ -301,6 +308,17 @@ async def christmas(ctx):
                                                                                 d["seconds"],
                                                                                 "s" if str(d["seconds"]) != "1" else "")
     await ctx.send("{} until Christmas {} in UTC".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S")))
+
+@client.command()
+async def sabotage(ctx, *, add=None):
+    if add is not None:
+        if not ctx.author.is_mod:
+            await ctx.send("@{} This command is for mods only".format(ctx.author.name))
+            return
+        sabotage_messages.append(add)
+        save_data()
+        return
+    await ctx.send("@{} has {}.".format(ctx.author.name, choice(sabotage_messages)))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):

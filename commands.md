@@ -21,13 +21,16 @@ Call BLANK a good bot and shows how many times this command has been used.
 Same as [good bot](#good-bot) except with good human instead.
 ### Christmas
 **Command**: `christmas`
-Time until Christmas (in UTC)
+Time until Christmas (in UTC).
+### Sabotage
+**Command**: `sabotage [add]`
+Posts a random message sabotaging BLANK. Mods can also use this command to add phrases to the sabotage list by adding it
+after the command.
 
 ## Utility Commands
 ### Help
 **Command**: `help` **OR** `commands`
-Get a link to the this page
-
+Get a link to this page
 ### Personal Information Warning
 **Command:** `piwarning` **OR** `pi`
 Warn BLANK about the current post possible violating PI rules (more noticeable than a chat message).
