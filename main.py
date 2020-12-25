@@ -228,18 +228,15 @@ async def _exit(ctx):
     graceful_exit()
 
 @client.command(name="restart")
-async def _restart(ctx, cache_data:bool=True):
+async def _restart(ctx, cache_data="true"):
     if not ctx.author.is_mod:
         await ctx.send("@{} This command is for mods only".format(ctx.author.name))
         return
-    if not isinstance(cache_data, bool):
-        if isinstance(cache_data, str):
-            if cache_data.lower() not in ["true", "false"]:
-                await ctx.send("Invalid boolean value for cache_data argument")
-                return
-            cache_data = bool(cache_data.title())
-        else:
-            cache_data = bool(cache_data)
+    vals = {"true": True, "false": False}
+    if cache_data.lower() not in vals.keys():
+        await ctx.send("Invalid boolean value for cache_data argument")
+        return
+    cache_data = vals[cache_data.lower()]
     await ctx.send("@{} restarting...".format(ctx.author.name))
     if cache_data:
         cache["restart"] = True
