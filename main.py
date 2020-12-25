@@ -23,29 +23,15 @@ def graceful_exit(restart=False):
 def assert_data():
     if not isdir("data"):
         mkdir("data")
-    if not isfile("data/counts.json"):
-        with open("data/counts.json", "w") as f:
-            json.dump({"goodbot": 0, "goodhuman": 0}, f, indent=2)
-    if not isfile("data/modlist.json"):
-        with open("data/modlist.json", "w") as f:
-            json.dump([], f, indent=2)
-    if not isfile("data/cache.json"):
-        with open("data/cache.json", "w") as f:
-            json.dump({"restart": False}, f, indent=2)
-    if not isfile("data/sabotagemessages.json"):
-        with open("data/sabotagemessages.json", "w") as f:
-            json.dump([], f, indent=2)
+    if not isfile("data/lists.json"):
+        with open("data/lists.json", "w") as f:
+            json.dump({"cache": {"restart": False}, "counts": {"goodhuman": 0, "goodbot": 0}, "modlist": [],
+                       "sabotagemessages": []}, f, indent=2)
 
 def save_data():
     assert_data()
-    with open("data/counts.json", "w") as f:
-        json.dump(counts, f, indent=2)
-    with open("data/modlist.json", "w") as f:
-        json.dump(mod_list, f, indent=2)
-    with open("data/cache.json", "w") as f:
-        json.dump(cache, f, indent=2)
-    with open("data/sabotagemessages.json", "w") as f:
-        json.dump(sabotage_messages, f, indent=2)
+    with open("data/lists.json", "w") as f:
+        json.dump(lists, f, indent=2)
 
 def get_gamma() -> int:
     last_comment = reddit.submission(url=osecrets["tor_flair_link"]).comments[0]
@@ -104,14 +90,8 @@ for secret in osecrets.values():
 
 # Load stored data
 assert_data()
-with open("data/counts.json", "r") as f:
-    counts = json.load(f)
-with open("data/modlist.json", "r") as f:
-    mod_list = json.load(f)
-with open("data/cache.json", "r") as f:
-    cache = json.load(f)
-with open("data/sabotagemessages.json", "r") as f:
-    sabotage_messages = json.load(f)
+with open("data/lists.json", "r") as f:
+    lists = json.load(f)
 
 # Create bot instance
 client = commands.Bot(**secrets)
@@ -122,9 +102,9 @@ reddit = praw.Reddit(user_agent="BLANK_DvTH Twitch Stream Bot", client_id=rsecre
                      password=rsecrets["reddit_password"])
 
 # Set starting gamma value
-if cache["restart"]:
-    starting_gamma = cache["starting_gamma"]
-    cache["restart"] = False
+if lists["cache"]["restart"]:
+    starting_gamma = lists["cache"]["starting_gamma"]
+    lists["cache"]["restart"] = False
     save_data()
 else:
     starting_gamma = get_gamma()
@@ -166,7 +146,7 @@ async def event_message(ctx):
 
 @client.event
 async def event_join(user):
-    if user.name.casefold() in mod_list:
+    if user.name.casefold() in lists["modlist"]:
         # noinspection PyProtectedMember
         ws = client._ws
         await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! @{} is here!".format(user.name))
@@ -194,10 +174,10 @@ async def goodbot(ctx):
     if ctx.author.name.casefold() == "blank_dvth":
         await ctx.send("You can't call yourself a good bot!")
     else:
-        counts["goodbot"] += 1
+        lists["counts"]["goodbot"] += 1
         await ctx.send("@BLANK_DvTH has been called a good bot {:,} times. "
                        "They're only half-bot! The human side is doing the streaming, "
-                       "better complement the human with \"{}goodhuman\".".format(counts["goodbot"], secrets["prefix"]))
+                       "better complement the human with \"{}goodhuman\".".format(lists["counts"]["goodbot"], secrets["prefix"]))
         save_data()
 
 @client.command()
@@ -205,8 +185,8 @@ async def goodhuman(ctx):
     if ctx.author.name.casefold() == "blank_dvth":
         await ctx.send("You can't call yourself a good human!")
     else:
-        counts["goodhuman"] += 1
-        await ctx.send("@BLANK_DvTH has been called a good human {:,} times.".format(counts["goodhuman"]))
+        lists["counts"]["goodhuman"] += 1
+        await ctx.send("@BLANK_DvTH has been called a good human {:,} times.".format(lists["counts"]["goodhuman"]))
         save_data()
 
 @client.command()
@@ -239,8 +219,8 @@ async def _restart(ctx, cache_data="true"):
     cache_data = vals[cache_data.lower()]
     await ctx.send("@{} restarting...".format(ctx.author.name))
     if cache_data:
-        cache["restart"] = True
-        cache["starting_gamma"] = starting_gamma
+        lists["cache"]["restart"] = True
+        lists["cache"]["starting_gamma"] = starting_gamma
     graceful_exit(restart=True)
 
 @client.command()
@@ -269,21 +249,19 @@ async def _starting_gamma(ctx, new_gamma:int=None):
 
 @client.command()
 async def addmod(ctx, mod):
-    global mod_list
     if not ctx.author.is_mod:
         await ctx.send("@{} This command is for mods only".format(ctx.author.name))
         return
-    mod_list.append(mod)
+    lists["modlist"].append(mod)
     save_data()
     await ctx.send("Added mod {} to mod list".format(mod))
 
 @client.command()
 async def deletemod(ctx, mod):
-    global mod_list
     if not ctx.author.is_mod:
         await ctx.send("@{} This command is for mods only".format(ctx.author.name))
         return
-    mod_list.remove(mod)
+    lists["modlist"].remove(mod)
     save_data()
     await ctx.send("Removed mod {} from mod list".format(mod))
 
@@ -313,10 +291,10 @@ async def sabotage(ctx, *, add=None):
         if not ctx.author.is_mod:
             await ctx.send("@{} This command is for mods only".format(ctx.author.name))
             return
-        sabotage_messages.append(add)
+        lists["sabotagemessages"].append(add)
         save_data()
         return
-    await ctx.send("@{} has {}.".format(ctx.author.name, choice(sabotage_messages)))
+    await ctx.send("@{} has {}.".format(ctx.author.name, choice(lists["sabotagemessages"])))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
