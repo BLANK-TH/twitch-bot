@@ -45,6 +45,9 @@ Get the number of transcriptions BLANK has done since the start of the stream.
 ### Starting Gamma
 **Command**: `startinggamma [new gamma]` **OR** `sg [new gamma]`
 Get the starting gamma of the stream or set it.
+### Restart
+**Command**: `restart [cache data]`
+Restart the bot, add a boolean value after the command to specify whether or not to cache data (like starting gamma).
 ### Add Mod
 **Command**: `addmod <mod>`
 Add a ToR mod to the detection list.

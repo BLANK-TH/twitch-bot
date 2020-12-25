@@ -228,8 +228,8 @@ async def _exit(ctx):
 
 @client.command(name="restart")
 async def _restart(ctx, cache_data:bool=True):
-    if ctx.author.name.casefold() != "blank_dvth":
-        await ctx.send("@{} This command is for BLANK only".format(ctx.author.name))
+    if not ctx.author.is_mod:
+        await ctx.send("@{} This command is for mods only".format(ctx.author.name))
         return
     if not isinstance(cache_data, bool):
         if isinstance(cache_data, str):
