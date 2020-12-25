@@ -13,9 +13,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 from difflib import SequenceMatcher
 
-def graceful_exit():
+def graceful_exit(restart=False):
     """Properly exit the program with appropriate exit operations"""
     save_data()
+    if restart:
+        execv(sys.executable, ["python"] + sys.argv)
     exit()
 
 def assert_data():
@@ -27,6 +29,9 @@ def assert_data():
     if not isfile("data/modlist.json"):
         with open("data/modlist.json", "w") as f:
             json.dump([], f, indent=2)
+    if not isfile("data/cache.json"):
+        with open("data/cache.json", "w") as f:
+            json.dump({"restart": False}, f, indent=2)
 
 def save_data():
     assert_data()
@@ -34,6 +39,8 @@ def save_data():
         json.dump(counts, f, indent=2)
     with open("data/modlist.json", "w") as f:
         json.dump(mod_list, f, indent=2)
+    with open("data/cache.json", "w") as f:
+        json.dump(cache, f, indent=2)
 
 def get_gamma() -> int:
     last_comment = reddit.submission(url=osecrets["tor_flair_link"]).comments[0]
@@ -95,6 +102,8 @@ with open("data/counts.json", "r") as f:
     counts = json.load(f)
 with open("data/modlist.json", "r") as f:
     mod_list = json.load(f)
+with open("cache.json", "r") as f:
+    cache = json.load(f)
 
 # Create bot instance
 client = commands.Bot(**secrets)
@@ -105,7 +114,12 @@ reddit = praw.Reddit(user_agent="BLANK_DvTH Twitch Stream Bot", client_id=rsecre
                      password=rsecrets["reddit_password"])
 
 # Set starting gamma value
-starting_gamma = get_gamma()
+if cache["restart"]:
+    starting_gamma = cache["starting_gamma"]
+    cache["restart"] = False
+    save_data()
+else:
+    starting_gamma = get_gamma()
 
 @client.event
 async def event_ready():
@@ -201,13 +215,23 @@ async def _exit(ctx):
     graceful_exit()
 
 @client.command(name="restart")
-async def _restart(ctx):
+async def _restart(ctx, cache_data:bool=True):
     if ctx.author.name.casefold() != "blank_dvth":
         await ctx.send("@{} This command is for BLANK only".format(ctx.author.name))
         return
+    if not isinstance(cache_data, bool):
+        if isinstance(cache_data, str):
+            if cache_data.lower() not in ["true", "false"]:
+                await ctx.send("Invalid boolean value for cache_data argument")
+                return
+            cache_data = bool(cache_data.title())
+        else:
+            cache_data = bool(cache_data)
     await ctx.send("@{} restarting...".format(ctx.author.name))
-    execv(sys.executable, ["python"] + sys.argv)
-    graceful_exit()
+    if cache_data:
+        cache["restart"] = True
+        cache["starting_gamma"] = starting_gamma
+    graceful_exit(restart=True)
 
 @client.command()
 async def progress(ctx):
