@@ -1,7 +1,11 @@
 # Commands
 **Prefix:** `b!`
-<example> Required
+
+&lt;example> Required
+
 [example] optional
+
+If the command contains quotation marks, then make sure those quotation marks are there or the command may break.
 
 ## Table of Contents
 - [Fun Commands](#fun-commands)

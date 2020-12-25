@@ -102,7 +102,7 @@ with open("data/counts.json", "r") as f:
     counts = json.load(f)
 with open("data/modlist.json", "r") as f:
     mod_list = json.load(f)
-with open("cache.json", "r") as f:
+with open("data/cache.json", "r") as f:
     cache = json.load(f)
 
 # Create bot instance
