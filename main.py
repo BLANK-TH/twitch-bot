@@ -162,15 +162,15 @@ async def event_command_error(ctx, error):
     await ctx.send("{} while executing command {}".format(type(error).__name__, ctx.message.content[len(secrets["prefix"]):]))
 
 @client.event
-async def event_message(ctx):
+async def event_message(message):
     """Called when message is sent"""
     # Ignore the bots own messages (wouldn't want infinite loops now do we)
-    if ctx.author.name.lower() == secrets["nick"].lower():
+    if message.author.name.lower() == secrets["nick"].lower():
         return
-    if secrets["prefix"] != ctx.message.content[len(secrets["prefix"]):] and "good bot" in ctx.message.content:
-        await ctx.send("Thanks")
+    if secrets["prefix"] != message.content[len(secrets["prefix"]):].lower() and "good bot" in message.content:
+        await message.channel.send("Thanks")
     # Handle any commands that might appear
-    await client.handle_commands(ctx)
+    await client.handle_commands(message)
 
 @client.event
 async def event_join(user):
