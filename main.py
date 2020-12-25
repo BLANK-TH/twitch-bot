@@ -125,6 +125,9 @@ else:
 async def event_ready():
     """Called when bot is ready"""
     print("Bot Ready")
+    # noinspection PyProtectedMember
+    ws = client._ws
+    await ws.send_privmsg(secrets["initial_channels"][0], "/me is now online, see my commands with \"{}help\"".format(secrets["prefix"]))
 
 @client.event
 async def event_command_error(ctx, error):
