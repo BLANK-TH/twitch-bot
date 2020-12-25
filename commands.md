@@ -44,7 +44,10 @@ Get the number of transcriptions BLANK has done since the start of the stream.
 Posts a list of streaming transcribers. Mods can also use this command to add/remove transcribers from the list.
 ### Calculator
 **Command**: `calculate <expression>` **OR** `c <expression>`
-Calculates a given expression
+Calculates a given expression.
+### 8 Ball
+**Command**: `8ball <question>`
+Ask the magic 8 ball a question.
 
 ## Mod Commands
 ### Starting Gamma

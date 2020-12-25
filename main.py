@@ -145,7 +145,7 @@ async def event_ready():
 
 @client.event
 async def event_command_error(ctx, error):
-    if type(error) is CommandNotFound:
+    if isinstance(error, CommandNotFound):
         command = ctx.message.content[len(secrets["prefix"]):]
         command_similarities = {}
         for cmd in client.commands.keys():
@@ -157,6 +157,10 @@ async def event_command_error(ctx, error):
             await ctx.send("Invalid Command, no commands with greater than 55% similarity found.")
         else:
             await ctx.send("Invalid Command, did you mean \"{}\"?".format(highest_command[1]))
+        return
+    if isinstance(error, MissingRequiredArgument):
+        await ctx.send("Missing Required Argument: {}. For more info on how to use this command, look at the help "
+                       "documentation ({}help)".format(error.param.name, secrets["prefix"]))
         return
     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
     await ctx.send("{} while executing command {}".format(type(error).__name__, ctx.message.content[len(secrets["prefix"]):]))
@@ -336,6 +340,17 @@ async def calculate(ctx, *, expression):
     except Exception as e:
         await ctx.send("An error has occurred, please ensure that you entered a valid expression! Error: \"{}\"".format(
             type(e).__name__ + ": " + str(e)))
+
+@client.command(name="8ball")
+async def _8ball(ctx, *, question=None):
+    if question is None:
+        await ctx.send("@{} what are you asking me again?".format(ctx.author.name))
+        return
+    responses = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it",
+     "As I see it, yes", "Most likely", "Yes", "Signs point to yes", "Reply hazy, try again", "Ask again later",
+     "Better not tell you now", "Cannot predict now", "Don't count on it", "My reply is no", "My sources say no",
+     "Very doubtful"]
+    await ctx.send("@" + ctx.author.name + " " + choice(responses))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
