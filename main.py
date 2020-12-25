@@ -167,6 +167,8 @@ async def event_message(ctx):
     # Ignore the bots own messages (wouldn't want infinite loops now do we)
     if ctx.author.name.lower() == secrets["nick"].lower():
         return
+    if secrets["prefix"] != ctx.message.content[len(secrets["prefix"]):] and "good bot" in ctx.message.content:
+        await ctx.send("Thanks")
     # Handle any commands that might appear
     await client.handle_commands(ctx)
 
