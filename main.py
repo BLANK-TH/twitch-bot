@@ -328,6 +328,15 @@ async def transcribers(ctx, action=None, *, value=None):
     await ctx.send("Here's a list of other transcribers that stream: " + ", ".join(["{0} (twitch.tv/{0})".format(t)
                                                                                     for t in lists["transcribers"]]))
 
+@client.command(aliases=["c"])
+async def calculate(ctx, *, expression):
+    try:
+        result = eval(expression,{},{})
+        await ctx.send("The answer to `{}` is `{}`".format(expression,str(result)))
+    except Exception as e:
+        await ctx.send("An error has occurred, please ensure that you entered a valid expression! Error: \"{}\"".format(
+            type(e).__name__ + ": " + str(e)))
+
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
     await ctx.send("Here's a link to the commands for this bot: "
