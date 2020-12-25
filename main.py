@@ -23,11 +23,17 @@ def assert_data():
         mkdir("data")
     if not isfile("data/counts.json"):
         with open("data/counts.json", "w") as f:
-            json.dump({"goodbot": 0, "goodhuman": 0}, f)
+            json.dump({"goodbot": 0, "goodhuman": 0}, f, indent=2)
+    if not isfile("data/modlist.json"):
+        with open("data/modlist.json", "w") as f:
+            json.dump([], f, indent=2)
 
 def save_data():
+    assert_data()
     with open("data/counts.json", "w") as f:
         json.dump(counts, f, indent=2)
+    with open("data/modlist.json", "w") as f:
+        json.dump(mod_list, f, indent=2)
 
 def get_gamma() -> int:
     last_comment = reddit.submission(url=osecrets["tor_flair_link"]).comments[0]
@@ -46,7 +52,6 @@ def similar(a, b):
 twitch_secrets = ["IRC_TOKEN", "CLIENT_ID", "NICK", "PREFIX", "INITIAL_CHANNELS"]
 reddit_secrets = ["REDDIT_ID", "REDDIT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD"]
 other_secrets = ["PI_WEBHOOK", "REMINDERS_WEBHOOK", "TOR_FLAIR_LINK", "TOR_FLAIR_COMMENT_ID"]
-mod_list = ["altrissa", "curatorofyourdreams"]
 
 envi = True
 # Check if secrets are in environment variables
@@ -88,6 +93,8 @@ for secret in osecrets.values():
 # Load stored data
 with open("data/counts.json", "r") as f:
     counts = json.load(f)
+with open("data/modlist.json", "r") as f:
+    mod_list = json.load(f)
 
 # Create bot instance
 client = commands.Bot(**secrets)
@@ -225,6 +232,16 @@ async def _starting_gamma(ctx, new_gamma:int=None):
         old_starting = starting_gamma
         starting_gamma = new_gamma
         await ctx.send("Starting gamma has been changed from {:,}Γ to {:,}Γ".format(old_starting, starting_gamma))
+
+@client.command()
+async def addmod(ctx, mod):
+    global mod_list
+    if not ctx.author.is_mod:
+        await ctx.send("@{} This command is for mods only".format(ctx.author.name))
+        return
+    mod_list.append(mod)
+    save_data()
+    await ctx.send("Added mod {} to mod list".format(mod))
 
 @client.command()
 async def christmas(ctx):
