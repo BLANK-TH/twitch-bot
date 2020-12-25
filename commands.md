@@ -24,7 +24,7 @@ Same as [good bot](#good-bot) except with good human instead.
 Time until Christmas (in UTC).
 ### Sabotage
 **Command**: `sabotage [add/remove] [value]`
-Posts a random message sabotaging BLANK. Mods can also use this command to add phrases to the sabotage list.
+Posts a random message sabotaging BLANK. Mods can also use this command to add/remove phrases to the sabotage list.
 
 ## Utility Commands
 ### Help
@@ -39,6 +39,9 @@ Get BLANK's current gamma (number of transcriptions done in total), this command
 ### Progress
 **Command**: `progress`
 Get the number of transcriptions BLANK has done since the start of the stream.
+### Transcribers
+**Command**: `transcribers [add/remove] [value]`
+Posts a list of streaming transcribers. Mods can also use this command to add/remove transcribers from the list.
 
 ## Mod Commands
 ### Starting Gamma

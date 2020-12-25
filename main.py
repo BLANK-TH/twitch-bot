@@ -26,7 +26,7 @@ def assert_data():
     if not isfile("data/lists.json"):
         with open("data/lists.json", "w") as f:
             json.dump({"cache": {"restart": False}, "counts": {"goodhuman": 0, "goodbot": 0}, "modlist": [],
-                       "sabotagemessages": []}, f, indent=2)
+                       "sabotagemessages": [], "transcribers": []}, f, indent=2)
 
 def save_data():
     assert_data()
@@ -45,6 +45,32 @@ def get_gamma() -> int:
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
+async def add_remove_action(ctx, action, value, data_name, appearance_name):
+    action = action.lower()
+    if action not in ["add", "remove"]:
+        await ctx.send("Invalid action \"{}\"".format(action))
+        return
+    if value is None:
+        await ctx.send("No value provided for action \"{}\"".format(action))
+        return
+    if not ctx.author.is_mod:
+        await ctx.send("@{} This command is for mods only".format(ctx.author.name))
+        return
+    if action == "add":
+        if value in lists[data_name]:
+            await ctx.send("\"{}\" is already in {} list".format(value, appearance_name))
+            return
+        lists[data_name].append(value)
+    elif action == "remove":
+        if value not in lists["sabotagemessages"]:
+            await ctx.send("\"{}\" is not in {} list".format(value, appearance_name))
+            return
+        lists[data_name].remove(value)
+    save_data()
+    await ctx.send("Successfully {}{} \"{}\" {} {} list".format(action, "d" if action[:-1] == "e" else "ed",
+                                                                value, "to" if action == "add" else "from",
+                                                                appearance_name))
 
 
 twitch_secrets = ["IRC_TOKEN", "CLIENT_ID", "NICK", "PREFIX", "INITIAL_CHANNELS"]
@@ -288,31 +314,17 @@ async def christmas(ctx):
 @client.command()
 async def sabotage(ctx, action=None, *, value=None):
     if action is not None:
-        action = action.lower()
-        if action not in ["add", "remove"]:
-            await ctx.send("Invalid action \"{}\"".format(action))
-            return
-        if value is None:
-            await ctx.send("Invalid value for action \"{}\"".format(action))
-            return
-        if not ctx.author.is_mod:
-            await ctx.send("@{} This command is for mods only".format(ctx.author.name))
-            return
-        if action == "add":
-            if value in lists["sabotagemessages"]:
-                await ctx.send("\"{}\" is already in sabotage list".format(value))
-                return
-            lists["sabotagemessages"].append(value)
-        elif action == "remove":
-            if value not in lists["sabotagemessages"]:
-                await ctx.send("\"{}\" is not in sabotage list".format(value))
-                return
-            lists["sabotagemessages"].remove(value)
-        save_data()
-        await ctx.send("Successfully {}{} \"{}\" from sabotage list".format(action, "d" if action[:-1] == "e" else "ed",
-                                                                            value))
+        await add_remove_action(ctx, action, value, "sabotagemessages", "sabotage")
         return
     await ctx.send("@{} has {}.".format(ctx.author.name, choice(lists["sabotagemessages"])))
+
+@client.command()
+async def transcribers(ctx, action=None, *, value=None):
+    if action is not None:
+        await add_remove_action(ctx, action, value, "transcribers", "streaming transcriber")
+        return
+    await ctx.send("Here's a list of other transcribers that stream: " + ", ".join(["{0} (twitch.tv/{0})".format(t)
+                                                                                    for t in lists["transcribers"]]))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
