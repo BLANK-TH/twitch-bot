@@ -156,9 +156,11 @@ async def event_message(ctx):
 @client.event
 async def event_join(user):
     if user.name.casefold() in mod_list:
+        # noinspection PyProtectedMember
         ws = client._ws
         await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! @{} is here!".format(user.name))
     elif user.name.casefold() == "cloakknight2":
+        # noinspection PyProtectedMember
         ws = client._ws
         await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad @{} is here, say byebye to all of "
                                                               "your posts!".format(user.name))
