@@ -332,7 +332,7 @@ async def transcribers(ctx, action=None, *, value=None):
 async def calculate(ctx, *, expression):
     try:
         result = eval(expression,{},{})
-        await ctx.send("The answer to `{}` is `{}`".format(expression,str(result)))
+        await ctx.send("The answer to \"{}\" is \"{}\"".format(expression,str(result)))
     except Exception as e:
         await ctx.send("An error has occurred, please ensure that you entered a valid expression! Error: \"{}\"".format(
             type(e).__name__ + ": " + str(e)))
