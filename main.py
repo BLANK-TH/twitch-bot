@@ -55,7 +55,7 @@ async def add_remove_action(ctx, action, value, data_name, appearance_name):
         await ctx.send("No value provided for action \"{}\"".format(action))
         return
     if not ctx.author.is_mod:
-        await ctx.send("@{} This command is for mods only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     if action == "add":
         if value in lists[data_name]:
@@ -181,11 +181,11 @@ async def event_join(user):
     if user.name.casefold() in lists["modlist"]:
         # noinspection PyProtectedMember
         ws = client._ws
-        await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! @{} is here!".format(user.name))
+        await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! {} is here!".format(user.name))
     elif user.name.casefold() == "cloakknight2":
         # noinspection PyProtectedMember
         ws = client._ws
-        await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad @{} is here, say byebye to all of "
+        await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad {} is here, say byebye to all of "
                                                               "your posts!".format(user.name))
 
 @client.command()
@@ -207,7 +207,7 @@ async def goodbot(ctx):
         await ctx.send("You can't call yourself a good bot!")
     else:
         lists["counts"]["goodbot"] += 1
-        await ctx.send("@BLANK_DvTH has been called a good bot {:,} times. "
+        await ctx.send("BLANK_DvTH has been called a good bot {:,} times. "
                        "They're only half-bot! The human side is doing the streaming, "
                        "better complement the human with \"{}goodhuman\".".format(lists["counts"]["goodbot"], secrets["prefix"]))
         save_data()
@@ -218,13 +218,13 @@ async def goodhuman(ctx):
         await ctx.send("You can't call yourself a good human!")
     else:
         lists["counts"]["goodhuman"] += 1
-        await ctx.send("@BLANK_DvTH has been called a good human {:,} times.".format(lists["counts"]["goodhuman"]))
+        await ctx.send("BLANK_DvTH has been called a good human {:,} times.".format(lists["counts"]["goodhuman"]))
         save_data()
 
 @client.command()
 async def remindme(ctx, *, reminder):
     if ctx.author.name.casefold() != "blank_dvth":
-        await ctx.send("@{} This command is for BLANK only. If there's more demand for this command I may come up with "
+        await ctx.send("{} This command is for BLANK only. If there's more demand for this command I may come up with "
                        "a public version that works on a time basis (e.g. {}remindme 1m test).".format(ctx.author.display_name,
                                                                                                        secrets["prefix"]))
         return
@@ -234,22 +234,22 @@ async def remindme(ctx, *, reminder):
 @client.command(name="exit")
 async def _exit(ctx):
     if ctx.author.name.casefold() != "blank_dvth":
-        await ctx.send("@{} This command is for BLANK only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for BLANK only".format(ctx.author.display_name))
         return
-    await ctx.send("@{} exiting...".format(ctx.author.display_name))
+    await ctx.send("{} exiting...".format(ctx.author.display_name))
     graceful_exit()
 
 @client.command(name="restart")
 async def _restart(ctx, cache_data="true"):
     if not ctx.author.is_mod:
-        await ctx.send("@{} This command is for mods only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     vals = {"true": True, "false": False}
     if cache_data.lower() not in vals.keys():
         await ctx.send("Invalid boolean value for cache_data argument")
         return
     cache_data = vals[cache_data.lower()]
-    await ctx.send("@{} restarting...".format(ctx.author.display_name))
+    await ctx.send("{} restarting...".format(ctx.author.display_name))
     if cache_data:
         lists["cache"]["restart"] = True
         lists["cache"]["starting_gamma"] = starting_gamma
@@ -269,7 +269,7 @@ async def _get_gamma(ctx):
 async def _starting_gamma(ctx, new_gamma:int=None):
     global starting_gamma
     if not ctx.author.is_mod:
-        await ctx.send("@{} This command is for mods only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     if new_gamma is None:
         # noinspection PyUnboundLocalVariable
@@ -282,7 +282,7 @@ async def _starting_gamma(ctx, new_gamma:int=None):
 @client.command()
 async def addmod(ctx, mod):
     if not ctx.author.is_mod:
-        await ctx.send("@{} This command is for mods only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     lists["modlist"].append(mod)
     save_data()
@@ -291,7 +291,7 @@ async def addmod(ctx, mod):
 @client.command()
 async def deletemod(ctx, mod):
     if not ctx.author.is_mod:
-        await ctx.send("@{} This command is for mods only".format(ctx.author.display_name))
+        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     lists["modlist"].remove(mod)
     save_data()
@@ -322,7 +322,7 @@ async def sabotage(ctx, action=None, *, value=None):
     if action is not None:
         await add_remove_action(ctx, action, value, "sabotagemessages", "sabotage")
         return
-    await ctx.send("@{} has {}.".format(ctx.author.display_name, choice(lists["sabotagemessages"])))
+    await ctx.send("{} has {}.".format(ctx.author.display_name, choice(lists["sabotagemessages"])))
 
 @client.command()
 async def transcribers(ctx, action=None, *, value=None):
@@ -344,13 +344,13 @@ async def calculate(ctx, *, expression):
 @client.command(name="8ball")
 async def _8ball(ctx, *, question=None):
     if question is None:
-        await ctx.send("@{} what are you asking me again?".format(ctx.author.display_name))
+        await ctx.send("{} what are you asking me again?".format(ctx.author.display_name))
         return
     responses = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it",
      "As I see it, yes", "Most likely", "Yes", "Signs point to yes", "Reply hazy, try again", "Ask again later",
      "Better not tell you now", "Cannot predict now", "Don't count on it", "My reply is no", "My sources say no",
      "Very doubtful"]
-    await ctx.send("@" + ctx.author.display_name + " " + choice(responses))
+    await ctx.send(ctx.author.display_name + " " + choice(responses))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
