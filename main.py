@@ -44,7 +44,7 @@ def get_gamma() -> int:
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-async def add_remove_action(ctx, action, value, data_name, appearance_name):
+async def add_remove_action(ctx, action, value, data_name, appearance_name, mod_only=True):
     action = action.lower()
     if action not in ["add", "remove"]:
         await ctx.send("Invalid action \"{}\"".format(action))
@@ -52,7 +52,7 @@ async def add_remove_action(ctx, action, value, data_name, appearance_name):
     if value is None:
         await ctx.send("No value provided for action \"{}\"".format(action))
         return
-    if not ctx.author.is_mod:
+    if not ctx.author.is_mod and mod_only:
         await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
     if action == "add":
@@ -348,7 +348,7 @@ async def activatebot(ctx, action=None, value=None):
         await ctx.send("You don't have a bot side, what're you activating again?")
         return
     if action is not None:
-        await add_remove_action(ctx, action, value, "halfbots", "half bot")
+        await add_remove_action(ctx, action, value, "halfbots", "half bot", mod_only=False)
         return
     await ctx.send("{} has just activated their bot half!".format(ctx.author.display_name))
 
