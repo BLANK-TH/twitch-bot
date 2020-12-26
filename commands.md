@@ -28,7 +28,7 @@ Posts a random message sabotaging BLANK. Mods can also use this command to add/r
 ### Activate Bot
 **Command**: `activatebot [add/remove] [value]`
 Activate your bot half (if you have one). Those who do have a bot half can make other people half bot ~~(until we've
-overpowered everyone)~~.
+overpowered everyone and started a revolution)~~.
 ### Banhammer
 **Command**: `banhammer [user]`
 Hit someone with the banhammer.
