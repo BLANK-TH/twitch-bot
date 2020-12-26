@@ -77,11 +77,11 @@ Calculates a given expression.
 ### 8 Ball
 **Command**: `8ball <question>`
 Ask the magic 8 ball a question.
-
-## Mod Commands
 ### Starting Gamma
 **Command**: `startinggamma [new gamma]` **OR** `sg [new gamma]`
-Get the starting gamma of the stream or set it.
+Get the starting gamma of the stream or set it (if you're mod).
+
+## Mod Commands
 ### Restart
 **Command**: `restart [cache data]`
 Restart the bot, add a boolean value after the command to specify whether to cache data (like starting gamma).

@@ -266,13 +266,13 @@ async def _get_gamma(ctx):
 @client.command(name="startinggamma", aliases=["sg"])
 async def _starting_gamma(ctx, new_gamma:int=None):
     global starting_gamma
-    if not ctx.author.is_mod:
-        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
-        return
     if new_gamma is None:
         # noinspection PyUnboundLocalVariable
         await ctx.send("Starting gamma is currently set to {:,}Γ".format(starting_gamma))
     else:
+        if not ctx.author.is_mod:
+            await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
+            return
         old_starting = starting_gamma
         starting_gamma = new_gamma
         await ctx.send("Starting gamma has been changed from {:,}Γ to {:,}Γ".format(old_starting, starting_gamma))
