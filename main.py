@@ -392,7 +392,8 @@ async def pet(ctx, name=None):
         name = name.replace("@", "")
         if name.casefold() not in lists["petlist"].keys():
             lists["petlist"][name.casefold()] = 1
-        await ctx.send("{} has been pet {:,} times".format(name, lists["petlist"][name.casefold()]))
+        await ctx.send("{0} has pet {1}, {1} has been pet {2:,} times".format(ctx.author.display_name, name,
+                                                                              lists["petlist"][name.casefold()]))
     save_data()
 
 @client.command()
