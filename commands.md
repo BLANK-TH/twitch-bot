@@ -25,6 +25,32 @@ Time until Christmas (in UTC).
 ### Sabotage
 **Command**: `sabotage [add/remove] [value]`
 Posts a random message sabotaging BLANK. Mods can also use this command to add/remove phrases to the sabotage list.
+### Activate Bot
+**Command**: `activatebot [add/remove] [value]`
+Activate your bot half (if you have one). Those who do have a bot half can make other people half bot ~~(until we've
+overpowered everyone)~~.
+### Banhammer
+**Command**: `banhammer [user]`
+Hit someone with the banhammer.
+### JavaScipt
+**Command**: `javascript`
+See for yourself.
+### Teal
+**Command**: `teal`
+Oh god no...
+### Madlad
+**Command**: `madlad [user]`
+Call someone a madlad.
+### Mod
+**Command**: `mod [user]`
+Warn someone a mod is coming.
+### Transcribe
+**Command**: `transcribe`
+Let's see how many posts you transcribe! Lower limit is 0, upper limit is the gamma count I started my stream with 
+subtracted by 1 ~~to ensure I don't get any competition~~ to ensure the command stays different every time.
+### Pet
+**Command**: `pet [user]`
+Pet someone.
 
 ## Utility Commands
 ### Help
@@ -42,6 +68,9 @@ Get the number of transcriptions BLANK has done since the start of the stream.
 ### Transcribers
 **Command**: `transcribers [add/remove] [value]`
 Posts a list of streaming transcribers. Mods can also use this command to add/remove transcribers from the list.
+### FAQ
+**Command**: `faq`
+Get the FAQ link for the Transcribers Of Reddit
 ### Calculator
 **Command**: `calculate <expression>` **OR** `c <expression>`
 Calculates a given expression.
@@ -56,9 +85,6 @@ Get the starting gamma of the stream or set it.
 ### Restart
 **Command**: `restart [cache data]`
 Restart the bot, add a boolean value after the command to specify whether or not to cache data (like starting gamma).
-### Add Mod
-**Command**: `addmod <mod>`
-Add a ToR mod to the detection list.
-### Add Mod
-**Command**: `removemod <mod>`
-Remove a ToR mod from the detection list.
+### Modlist
+**Command**: `modlist [add/remove] [value]`
+Get the modlist, or modify it if an action and value is specified.

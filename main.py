@@ -4,7 +4,7 @@ import traceback
 import sys
 import praw
 import datetime
-from random import choice
+from random import choice, randint
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import *
 from os import environ, getenv, execv, mkdir
@@ -26,7 +26,7 @@ def assert_data():
     if not isfile("data/lists.json"):
         with open("data/lists.json", "w") as f:
             json.dump({"cache": {"restart": False}, "counts": {"goodhuman": 0, "goodbot": 0}, "modlist": [],
-                       "sabotagemessages": [], "transcribers": []}, f, indent=2)
+                       "sabotagemessages": [], "transcribers": [], "halfbots": [], "petlist": {"air": 0}}, f, indent=2)
 
 def save_data():
     assert_data()
@@ -39,9 +39,7 @@ def get_gamma() -> int:
         if last_comment.id != osecrets["tor_flair_comment_id"]:
             last_comment = last_comment.replies[0]
         else:
-            flair_text = last_comment.author_flair_text
-            break
-    return int(flair_text.split("Γ")[0])
+            return int(last_comment.author_flair_text.split("Γ")[0])
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -280,22 +278,14 @@ async def _starting_gamma(ctx, new_gamma:int=None):
         await ctx.send("Starting gamma has been changed from {:,}Γ to {:,}Γ".format(old_starting, starting_gamma))
 
 @client.command()
-async def addmod(ctx, mod):
+async def modlist(ctx, action=None, value=None):
     if not ctx.author.is_mod:
         await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
         return
-    lists["modlist"].append(mod)
-    save_data()
-    await ctx.send("Added mod {} to mod list".format(mod))
-
-@client.command()
-async def deletemod(ctx, mod):
-    if not ctx.author.is_mod:
-        await ctx.send("{} This command is for mods only".format(ctx.author.display_name))
+    if action is not None:
+        await add_remove_action(ctx, action, value, "modlist", "mod")
         return
-    lists["modlist"].remove(mod)
-    save_data()
-    await ctx.send("Removed mod {} from mod list".format(mod))
+    await ctx.send("Here is the current mod list: " + ", ".join(lists["modlist"]))
 
 @client.command()
 async def christmas(ctx):
@@ -351,6 +341,63 @@ async def _8ball(ctx, *, question=None):
      "Better not tell you now", "Cannot predict now", "Don't count on it", "My reply is no", "My sources say no",
      "Very doubtful"]
     await ctx.send(ctx.author.display_name + " " + choice(responses))
+
+@client.command()
+async def activatebot(ctx, action=None, value=None):
+    if ctx.author.name.casefold() not in lists["halfbots"]:
+        await ctx.send("You don't have a bot side, what're you activating again?")
+        return
+    if action is not None:
+        await add_remove_action(ctx, action, value, "halfbots", "half bot")
+        return
+    await ctx.send("{} has just activated their bot half!".format(ctx.author.display_name))
+
+@client.command()
+async def banhammer(ctx, user=None):
+    if user is None:
+        await ctx.send("BOP {} has just hit themselves on accident with the banhammer!".format(ctx.author.display_name))
+    else:
+        await ctx.send("BOP {} has just hit {} with the banhammer!".format(ctx.author.display_name, user))
+
+@client.command()
+async def faq(ctx):
+    await ctx.send("You can see the FAQ of ToR (Transcribers Of Reddit) on my ToR panel as well as the full FAQ here:"
+                   " https://www.reddit.com/r/TranscribersOfReddit/wiki/index")
+
+@client.command()
+async def javascript(ctx):
+    await ctx.send("Ew ew ew get that outta here!!!!")
+
+@client.command()
+async def teal(ctx):
+    await ctx.send("Oh no! Teal :(. Time to do a 150/10^-∞!")
+
+@client.command()
+async def madlad(ctx, user=None):
+    if user is None:
+        await ctx.send("That term is reserved for Cloakknight!")
+    else:
+        await ctx.send("{} is a madlad!".format(user))
+
+@client.command()
+async def mod(ctx, name=None):
+    await ctx.send("Everyone run! {} is coming!".format("Super Scary Mod Geoffy" if name is None else name))
+
+@client.command()
+async def pet(ctx, name=None):
+    if name is None:
+        lists["petlist"]["air"] += 1
+        await ctx.send("The air has been pet {:,} times".format(lists["petlist"]["air"]))
+    else:
+        name = name.replace("@", "")
+        if name.casefold() not in lists["petlist"].keys():
+            lists["petlist"][name.casefold()] = 1
+        await ctx.send("{} has been pet {:,} times".format(name, lists["petlist"][name.casefold()]))
+    save_data()
+
+@client.command()
+async def transcribe(ctx):
+    await ctx.send("{} has transcribed {:,} posts!".format(ctx.author.display_name, randint(0, starting_gamma-1)))
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
