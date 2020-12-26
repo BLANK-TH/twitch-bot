@@ -84,7 +84,7 @@ Ask the magic 8 ball a question.
 Get the starting gamma of the stream or set it.
 ### Restart
 **Command**: `restart [cache data]`
-Restart the bot, add a boolean value after the command to specify whether or not to cache data (like starting gamma).
+Restart the bot, add a boolean value after the command to specify whether to cache data (like starting gamma).
 ### Modlist
 **Command**: `modlist [add/remove] [value]`
 Get the modlist, or modify it if an action and value is specified.
