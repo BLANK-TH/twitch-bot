@@ -20,8 +20,11 @@ Call BLANK a good bot and shows how many times this command has been used.
 **Command**: `goodhuman`
 Same as [good bot](#good-bot) except with good human instead.
 ### Christmas
-**Command**: `christmas`
-Time until Christmas (in UTC).
+**Command**: `christmas [timezone]`
+Time until Christmas (default timezone is UTC).
+### New Year
+**Command**: `newyear [timezone]`
+Time until the new year (default timezone is UTC).
 ### Sabotage
 **Command**: `sabotage [add/remove] [value]`
 Posts a random message sabotaging BLANK. Mods can also use this command to add/remove phrases to the sabotage list.

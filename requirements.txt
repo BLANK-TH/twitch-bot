@@ -2,3 +2,4 @@ twitchio~=1.1.0
 python-dotenv~=0.14.0
 requests~=2.23.0
 praw~=7.1.0
+arrow~=0.15.5

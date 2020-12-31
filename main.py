@@ -1,17 +1,20 @@
-import requests
-import json
-import traceback
-import sys
-import praw
 import datetime
-from random import choice, randint
-from twitchio.ext import commands
-from twitchio.ext.commands.errors import *
+import json
+import sys
+import traceback
+from difflib import SequenceMatcher
 from os import environ, getenv, execv, mkdir
 from os.path import isfile, isdir
 from pathlib import Path
+from random import choice, randint
+
+import arrow
+import praw
+import requests
 from dotenv import load_dotenv
-from difflib import SequenceMatcher
+from twitchio.ext import commands
+from twitchio.ext.commands.errors import *
+
 
 def graceful_exit(restart=False):
     """Properly exit the program with appropriate exit operations"""
@@ -19,6 +22,7 @@ def graceful_exit(restart=False):
     if restart:
         execv(sys.executable, ["python"] + sys.argv)
     exit()
+
 
 def assert_data():
     if not isdir("data"):
@@ -28,10 +32,12 @@ def assert_data():
             json.dump({"cache": {"restart": False}, "counts": {"goodhuman": 0, "goodbot": 0}, "modlist": [],
                        "sabotagemessages": [], "transcribers": [], "halfbots": [], "petlist": {"air": 0}}, f, indent=2)
 
+
 def save_data():
     assert_data()
     with open("data/lists.json", "w") as f:
         json.dump(lists, f, indent=2)
+
 
 def get_gamma() -> int:
     last_comment = reddit.submission(url=osecrets["tor_flair_link"]).comments[0]
@@ -41,8 +47,10 @@ def get_gamma() -> int:
         else:
             return int(last_comment.author_flair_text.split("Γ")[0])
 
+
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
+
 
 async def add_remove_action(ctx, action, value, data_name, appearance_name, mod_only=True):
     action = action.lower()
@@ -133,13 +141,16 @@ if lists["cache"]["restart"]:
 else:
     starting_gamma = get_gamma()
 
+
 @client.event
 async def event_ready():
     """Called when bot is ready"""
     print("Bot Ready")
     # noinspection PyProtectedMember
     ws = client._ws
-    await ws.send_privmsg(secrets["initial_channels"][0], "/me is now online, see my commands with \"{}help\"".format(secrets["prefix"]))
+    await ws.send_privmsg(secrets["initial_channels"][0],
+                          "/me is now online, see my commands with \"{}help\"".format(secrets["prefix"]))
+
 
 @client.event
 async def event_command_error(ctx, error):
@@ -147,7 +158,7 @@ async def event_command_error(ctx, error):
         command = ctx.message.content[len(secrets["prefix"]):]
         command_similarities = {}
         for cmd in client.commands.keys():
-            command_similarities[similar(command,cmd)] = cmd
+            command_similarities[similar(command, cmd)] = cmd
         if len(command_similarities) == 0:
             await ctx.send("Invalid Command, no similar commands found.")
         highest_command = max([*command_similarities]), command_similarities[max([*command_similarities])]
@@ -161,7 +172,9 @@ async def event_command_error(ctx, error):
                        "documentation ({}help)".format(error.param.name, secrets["prefix"]))
         return
     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-    await ctx.send("{} while executing command {}".format(type(error).__name__, ctx.message.content[len(secrets["prefix"]):]))
+    await ctx.send(
+        "{} while executing command {}".format(type(error).__name__, ctx.message.content[len(secrets["prefix"]):]))
+
 
 @client.event
 async def event_message(message):
@@ -173,6 +186,7 @@ async def event_message(message):
         await message.channel.send("Thanks")
     # Handle any commands that might appear
     await client.handle_commands(message)
+
 
 @client.event
 async def event_join(user):
@@ -186,10 +200,12 @@ async def event_join(user):
         await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad {} is here, say byebye to all of "
                                                               "your posts!".format(user.name))
 
+
 @client.command()
 async def test(ctx):
     choices = ["I'm working!", "What is there to test?", "What? You think I'm broken?"]
     await ctx.send(choice(choices))
+
 
 @client.command(aliases=["pi"])
 async def piwarning(ctx):
@@ -199,6 +215,7 @@ async def piwarning(ctx):
                   headers={"Content-Type": "application/json"})
     await ctx.send("BLANK_DvTH has been warned through a discord ping")
 
+
 @client.command()
 async def goodbot(ctx):
     if ctx.author.name.casefold() == "blank_dvth":
@@ -207,8 +224,10 @@ async def goodbot(ctx):
         lists["counts"]["goodbot"] += 1
         await ctx.send("BLANK_DvTH has been called a good bot {:,} times. "
                        "They're only half-bot! The human side is doing the streaming, "
-                       "better complement the human with \"{}goodhuman\".".format(lists["counts"]["goodbot"], secrets["prefix"]))
+                       "better complement the human with \"{}goodhuman\".".format(lists["counts"]["goodbot"],
+                                                                                  secrets["prefix"]))
         save_data()
+
 
 @client.command()
 async def goodhuman(ctx):
@@ -219,15 +238,18 @@ async def goodhuman(ctx):
         await ctx.send("BLANK_DvTH has been called a good human {:,} times.".format(lists["counts"]["goodhuman"]))
         save_data()
 
+
 @client.command()
 async def remindme(ctx, *, reminder):
     if ctx.author.name.casefold() != "blank_dvth":
         await ctx.send("{} This command is for BLANK only. If there's more demand for this command I may come up with "
-                       "a public version that works on a time basis (e.g. {}remindme 1m test).".format(ctx.author.display_name,
-                                                                                                       secrets["prefix"]))
+                       "a public version that works on a time basis (e.g. {}remindme 1m test).".format(
+            ctx.author.display_name,
+            secrets["prefix"]))
         return
     requests.post(osecrets["reminders_webhook"], data=json.dumps({"content": reminder}),
                   headers={"Content-Type": "application/json"})
+
 
 @client.command(name="exit")
 async def _exit(ctx):
@@ -236,6 +258,7 @@ async def _exit(ctx):
         return
     await ctx.send("{} exiting...".format(ctx.author.display_name))
     graceful_exit()
+
 
 @client.command(name="restart")
 async def _restart(ctx, cache_data="true"):
@@ -253,18 +276,21 @@ async def _restart(ctx, cache_data="true"):
         lists["cache"]["starting_gamma"] = starting_gamma
     graceful_exit(restart=True)
 
+
 @client.command()
 async def progress(ctx):
     gamma = get_gamma()
     await ctx.send("{:,} transcription{} have been done this stream.".format(gamma - starting_gamma,
                                                                              "s" if gamma - starting_gamma != 1 else ""))
 
+
 @client.command(name="getgamma", aliases=["gamma"])
 async def _get_gamma(ctx):
     await ctx.send("BLANK is currently at {:,}Γ".format(get_gamma()))
 
+
 @client.command(name="startinggamma", aliases=["sg"])
-async def _starting_gamma(ctx, new_gamma:int=None):
+async def _starting_gamma(ctx, new_gamma: int = None):
     global starting_gamma
     if new_gamma is None:
         # noinspection PyUnboundLocalVariable
@@ -277,6 +303,7 @@ async def _starting_gamma(ctx, new_gamma:int=None):
         starting_gamma = new_gamma
         await ctx.send("Starting gamma has been changed from {:,}Γ to {:,}Γ".format(old_starting, starting_gamma))
 
+
 @client.command()
 async def modlist(ctx, action=None, value=None):
     if not ctx.author.is_mod:
@@ -287,12 +314,17 @@ async def modlist(ctx, action=None, value=None):
         return
     await ctx.send("Here is the current mod list: " + ", ".join(lists["modlist"]))
 
+
 @client.command()
-async def christmas(ctx):
-    date = datetime.datetime.utcnow()
-    next_xmas = datetime.datetime(date.year, 12, 25)
-    if next_xmas < date:
-        next_xmas = datetime.datetime(date.year + 1, 12, 25)
+async def christmas(ctx, *, timezone="UTC"):
+    try:
+        date = arrow.utcnow().to(timezone)
+        next_xmas = arrow.get(datetime.datetime(date.year, 12, 25), timezone)
+        if next_xmas < date:
+            next_xmas = arrow.get(datetime.datetime(date.year + 1, 12, 25), timezone)
+    except arrow.parser.ParserError:
+        await ctx.send("Could not parse timezone \"{}\"".format(timezone))
+        return
     tdelta = next_xmas - date
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
@@ -305,7 +337,33 @@ async def christmas(ctx):
                                                                                 "s" if str(d["minutes"]) != "1" else "",
                                                                                 d["seconds"],
                                                                                 "s" if str(d["seconds"]) != "1" else "")
-    await ctx.send("{} until Christmas {} in UTC".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S")))
+    await ctx.send(
+        "{} until Christmas ({} in {})".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S"), timezone))
+
+
+@client.command()
+async def newyear(ctx, *, timezone="UTC"):
+    try:
+        date = arrow.utcnow().to(timezone)
+        next_xmas = arrow.get(datetime.datetime(date.year + 1, 1, 1), timezone)
+    except arrow.parser.ParserError:
+        await ctx.send("Could not parse timezone \"{}\"".format(timezone))
+        return
+    tdelta = next_xmas - date
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    formatted_time = "{} day{}, {} hour{}, {} minute{}, and {} second{}".format(d["days"],
+                                                                                "s" if str(d["days"]) != "1" else "",
+                                                                                d["hours"],
+                                                                                "s" if str(d["hours"]) != "1" else "",
+                                                                                d["minutes"],
+                                                                                "s" if str(d["minutes"]) != "1" else "",
+                                                                                d["seconds"],
+                                                                                "s" if str(d["seconds"]) != "1" else "")
+    await ctx.send(
+        "{} until New Years ({} in {})".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S"), timezone))
+
 
 @client.command()
 async def sabotage(ctx, action=None, *, value=None):
@@ -313,6 +371,7 @@ async def sabotage(ctx, action=None, *, value=None):
         await add_remove_action(ctx, action, value, "sabotagemessages", "sabotage")
         return
     await ctx.send("{} has {}.".format(ctx.author.display_name, choice(lists["sabotagemessages"])))
+
 
 @client.command()
 async def transcribers(ctx, action=None, *, value=None):
@@ -322,14 +381,16 @@ async def transcribers(ctx, action=None, *, value=None):
     await ctx.send("Here's a list of other transcribers that stream: " + ", ".join(["{0} (twitch.tv/{0})".format(t)
                                                                                     for t in lists["transcribers"]]))
 
+
 @client.command(aliases=["c"])
 async def calculate(ctx, *, expression):
     try:
-        result = eval(expression,{},{})
-        await ctx.send("The answer to \"{}\" is \"{:,}\"".format(expression,result))
+        result = eval(expression, {}, {})
+        await ctx.send("The answer to \"{}\" is \"{:,}\"".format(expression, result))
     except Exception as e:
         await ctx.send("An error has occurred, please ensure that you entered a valid expression! Error: \"{}\"".format(
             type(e).__name__ + ": " + str(e)))
+
 
 @client.command(name="8ball")
 async def _8ball(ctx, *, question=None):
@@ -337,10 +398,13 @@ async def _8ball(ctx, *, question=None):
         await ctx.send("{} what are you asking me again?".format(ctx.author.display_name))
         return
     responses = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it",
-     "As I see it, yes", "Most likely", "Yes", "Signs point to yes", "Reply hazy, try again", "Ask again later",
-     "Better not tell you now", "Cannot predict now", "Don't count on it", "My reply is no", "My sources say no",
-     "Very doubtful"]
+                 "As I see it, yes", "Most likely", "Yes", "Signs point to yes", "Reply hazy, try again",
+                 "Ask again later",
+                 "Better not tell you now", "Cannot predict now", "Don't count on it", "My reply is no",
+                 "My sources say no",
+                 "Very doubtful"]
     await ctx.send(ctx.author.display_name + " " + choice(responses))
+
 
 @client.command()
 async def activatebot(ctx, action=None, value=None):
@@ -352,6 +416,7 @@ async def activatebot(ctx, action=None, value=None):
         return
     await ctx.send("{} has just activated their bot half!".format(ctx.author.display_name))
 
+
 @client.command()
 async def banhammer(ctx, user=None):
     if user is None:
@@ -359,18 +424,22 @@ async def banhammer(ctx, user=None):
     else:
         await ctx.send("BOP {} has just hit {} with the banhammer!".format(ctx.author.display_name, user))
 
+
 @client.command()
 async def faq(ctx):
     await ctx.send("You can see the FAQ of ToR (Transcribers Of Reddit) on my ToR panel as well as the full FAQ here:"
                    " https://www.reddit.com/r/TranscribersOfReddit/wiki/index")
 
+
 @client.command()
 async def javascript(ctx):
     await ctx.send("Ew ew ew get that outta here!!!!")
 
+
 @client.command()
 async def teal(ctx):
     await ctx.send("Oh no! Teal :(. Time to do a 150/10^-∞!")
+
 
 @client.command()
 async def madlad(ctx, user=None):
@@ -379,9 +448,11 @@ async def madlad(ctx, user=None):
     else:
         await ctx.send("{} is a madlad!".format(user))
 
+
 @client.command()
 async def mod(ctx, name=None):
     await ctx.send("Everyone run! {} is coming!".format("Super Scary Mod Geoffy" if name is None else name))
+
 
 @client.command()
 async def pet(ctx, name=None):
@@ -396,13 +467,16 @@ async def pet(ctx, name=None):
                                                                               lists["petlist"][name.casefold()]))
     save_data()
 
+
 @client.command()
 async def transcribe(ctx):
-    await ctx.send("{} has transcribed {:,} posts!".format(ctx.author.display_name, randint(0, starting_gamma-1)))
+    await ctx.send("{} has transcribed {:,} posts!".format(ctx.author.display_name, randint(0, starting_gamma - 1)))
+
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):
     await ctx.send("Here's a link to the commands for this bot: "
                    "https://www.github.com/BLANK-TH/twitch-bot/blob/master/commands.md")
+
 
 client.run()
