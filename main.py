@@ -345,11 +345,11 @@ async def christmas(ctx, *, timezone="UTC"):
 async def newyear(ctx, *, timezone="UTC"):
     try:
         date = arrow.utcnow().to(timezone)
-        next_xmas = arrow.get(datetime.datetime(date.year + 1, 1, 1), timezone)
+        next_newyear = arrow.get(datetime.datetime(date.year + 1, 1, 1), timezone)
     except arrow.parser.ParserError:
         await ctx.send("Could not parse timezone \"{}\"".format(timezone))
         return
-    tdelta = next_xmas - date
+    tdelta = next_newyear - date
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
@@ -362,7 +362,7 @@ async def newyear(ctx, *, timezone="UTC"):
                                                                                 d["seconds"],
                                                                                 "s" if str(d["seconds"]) != "1" else "")
     await ctx.send(
-        "{} until New Years ({} in {})".format(formatted_time, next_xmas.strftime("%Y-%m-%d %H:%M:%S"), timezone))
+        "{} until New Years ({} in {})".format(formatted_time, next_newyear.strftime("%Y-%m-%d %H:%M:%S"), timezone))
 
 
 @client.command()
