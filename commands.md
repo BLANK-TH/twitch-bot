@@ -14,10 +14,10 @@ If the command contains quotation marks, then make sure those quotation marks ar
 
 ## Fun Commands
 ### Good Bot
-**Command**: `goodbot`  
-Call BLANK a good bot and shows how many times this command has been used.
+**Command**: `goodbot [user]`  
+Call BLANK (or the specified user) a good bot and shows how many times this command has been used on them.
 ### Good Human
-**Command**: `goodhuman`  
+**Command**: `goodhuman [user]`  
 Same as [good bot](#good-bot) except with good human instead.
 ### Christmas
 **Command**: `christmas [timezone]`  
