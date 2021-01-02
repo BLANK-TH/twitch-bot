@@ -193,12 +193,12 @@ async def event_join(user):
     if user.name.casefold() in lists["modlist"]:
         # noinspection PyProtectedMember
         ws = client._ws
-        await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! {} is here!".format(user.name))
+        await ws.send_privmsg(secrets["initial_channels"][0], "Everyone run! {} is here!".format(user.display_name))
     elif user.name.casefold() == "cloakknight2":
         # noinspection PyProtectedMember
         ws = client._ws
         await ws.send_privmsg(secrets["initial_channels"][0], "Looks like madlad {} is here, say byebye to all of "
-                                                              "your posts!".format(user.name))
+                                                              "your posts!".format(user.display_name))
 
 
 @client.command()
@@ -226,7 +226,7 @@ async def goodbot(ctx, *, user="BLANK_DvTH"):
         else:
             lists["goodbot"][user.casefold()] += 1
         await ctx.send(
-            "BLANK_DvTH has been called a good bot {:,} times.".format(lists["goodbot"][user.casefold()]))
+            "{} has been called a good bot {:,} times.".format(user, lists["goodbot"][user.casefold()]))
         save_data()
 
 
@@ -239,7 +239,7 @@ async def goodhuman(ctx, *, user="BLANK_DvTH"):
             lists["goodhuman"][user.casefold()] = 1
         else:
             lists["goodhuman"][user.casefold()] += 1
-        await ctx.send("BLANK_DvTH has been called a good human {:,} times.".format(lists["goodhuman"][user.casefold()]))
+        await ctx.send("{} has been called a good human {:,} times.".format(user, lists["goodhuman"][user.casefold()]))
         save_data()
 
 
