@@ -219,14 +219,14 @@ async def piwarning(ctx):
 @client.command()
 async def goodbot(ctx, *, user="BLANK_DvTH"):
     if ctx.author.name.casefold() == user.casefold():
-        await ctx.send("You can't call yourself a good human!")
+        await ctx.send("You can't call yourself a good bot!")
     else:
-        if user.casefold() not in lists["goodhuman"].keys():
-            lists["goodhuman"][user.casefold()] = 1
+        if user.casefold() not in lists["goodbot"].keys():
+            lists["goodbot"][user.casefold()] = 1
         else:
-            lists["goodhuman"][user.casefold()] += 1
+            lists["goodbot"][user.casefold()] += 1
         await ctx.send(
-            "BLANK_DvTH has been called a good human {:,} times.".format(lists["goodhuman"][user.casefold()]))
+            "BLANK_DvTH has been called a good bot {:,} times.".format(lists["goodbot"][user.casefold()]))
         save_data()
 
 
