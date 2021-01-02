@@ -29,7 +29,7 @@ def assert_data():
         mkdir("data")
     if not isfile("data/lists.json"):
         with open("data/lists.json", "w") as f:
-            json.dump({"cache": {"restart": False}, "counts": {"goodhuman": 0, "goodbot": 0}, "modlist": [],
+            json.dump({"cache": {"restart": False}, "goodhuman": {}, "goodbot": {}, "modlist": [],
                        "sabotagemessages": [], "transcribers": [], "halfbots": [], "petlist": {"air": 0}}, f, indent=2)
 
 
@@ -217,25 +217,29 @@ async def piwarning(ctx):
 
 
 @client.command()
-async def goodbot(ctx):
-    if ctx.author.name.casefold() == "blank_dvth":
-        await ctx.send("You can't call yourself a good bot!")
+async def goodbot(ctx, *, user="BLANK_DvTH"):
+    if ctx.author.name.casefold() == user.casefold():
+        await ctx.send("You can't call yourself a good human!")
     else:
-        lists["counts"]["goodbot"] += 1
-        await ctx.send("BLANK_DvTH has been called a good bot {:,} times. "
-                       "They're only half-bot! The human side is doing the streaming, "
-                       "better complement the human with \"{}goodhuman\".".format(lists["counts"]["goodbot"],
-                                                                                  secrets["prefix"]))
+        if user.casefold() not in lists["goodhuman"].keys():
+            lists["goodhuman"][user.casefold()] = 1
+        else:
+            lists["goodhuman"][user.casefold()] += 1
+        await ctx.send(
+            "BLANK_DvTH has been called a good human {:,} times.".format(lists["goodhuman"][user.casefold()]))
         save_data()
 
 
 @client.command()
-async def goodhuman(ctx):
-    if ctx.author.name.casefold() == "blank_dvth":
+async def goodhuman(ctx, *, user="BLANK_DvTH"):
+    if ctx.author.name.casefold() == user.casefold():
         await ctx.send("You can't call yourself a good human!")
     else:
-        lists["counts"]["goodhuman"] += 1
-        await ctx.send("BLANK_DvTH has been called a good human {:,} times.".format(lists["counts"]["goodhuman"]))
+        if user.casefold() not in lists["goodhuman"].keys():
+            lists["goodhuman"][user.casefold()] = 1
+        else:
+            lists["goodhuman"][user.casefold()] += 1
+        await ctx.send("BLANK_DvTH has been called a good human {:,} times.".format(lists["goodhuman"][user.casefold()]))
         save_data()
 
 
