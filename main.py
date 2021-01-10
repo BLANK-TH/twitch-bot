@@ -476,6 +476,9 @@ async def pet(ctx, name=None):
 async def transcribe(ctx):
     await ctx.send("{} has transcribed {:,} posts!".format(ctx.author.display_name, randint(0, starting_gamma - 1)))
 
+@client.command()
+async def soon(ctx):
+    await ctx.send("Soon™")
 
 @client.command(name="help", aliases=["commands"])
 async def _help(ctx):

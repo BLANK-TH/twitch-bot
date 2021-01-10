@@ -54,6 +54,9 @@ subtracted by 1 ~~to ensure I don't get any competition~~ to ensure the command 
 ### Pet
 **Command**: `pet [user]`
 Pet someone.
+### Soon™
+**Command: `soon`**
+Coming soon...
 
 ## Utility Commands
 ### Help
